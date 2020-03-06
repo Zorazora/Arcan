@@ -1,5 +1,6 @@
 package com.example.arcan;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +8,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
+@MapperScan("com.example.arcan.mapper")
 public class ArcanApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
 	@Override
