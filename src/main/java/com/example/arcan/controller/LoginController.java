@@ -58,6 +58,18 @@ public class LoginController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/current", method = RequestMethod.POST)
+    public Object currentUser(@RequestBody Map<String, Object> mailInfo) {
+        Map<String, Object> map = new HashMap<>();
+
+        String mailaddress = (String) mailInfo.get("mailaddress");
+
+        map.put("data", userService.getCurrentUser(mailaddress));
+
+        return map;
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/resend", method = RequestMethod.POST)
     public Object resendMail(@RequestBody Map<String, Object> sendInfo) {
         Map<String, Object> map = new HashMap<>();

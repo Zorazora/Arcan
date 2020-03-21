@@ -1,6 +1,7 @@
 package com.example.arcan.service;
 
 import com.example.arcan.dao.User;
+import com.example.arcan.utils.UserInfo;
 import com.example.arcan.utils.enums.LoginEnum;
 
 public interface UserService {
@@ -8,4 +9,5 @@ public interface UserService {
     LoginEnum isValidLink(String tokenId);
     LoginEnum signIn(String mailaddress, String password);
     boolean resend(String mailaddress);
+    UserInfo getCurrentUser(String mailaddress);
 }

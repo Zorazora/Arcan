@@ -3,6 +3,7 @@ package com.example.arcan.service.serviceImpl;
 import com.example.arcan.dao.User;
 import com.example.arcan.mapper.UserMapper;
 import com.example.arcan.service.UserService;
+import com.example.arcan.utils.UserInfo;
 import com.example.arcan.utils.enums.LoginEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +69,15 @@ public class UserServiceImpl implements UserService{
     public boolean resend(String mailaddress) {
         User user = userMapper.findUserByMail(mailaddress);
         return user != null && sendMail(mailaddress, user.getId());
+    }
+
+    @Override
+    public UserInfo getCurrentUser(String mailaddress) {
+        User user = userMapper.findUserByMail(mailaddress);
+        if(user != null) {
+            return new UserInfo(user.getMailaddress(), user.getUsername(), user.getAvatar(), user.getId());
+        }
+        return null;
     }
 
     private boolean sendMail(String recipient, String token) {
