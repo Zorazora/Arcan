@@ -52,7 +52,7 @@ public class ProjectController {
                 pathFile.mkdirs();
             }
 
-            unzip(newFile.getAbsolutePath(), path);
+            //unzip(newFile.getAbsolutePath(), path);
 
             File rootFile = pathFile.listFiles()[0];
             FileNode root = processService.process(rootFile);
@@ -71,14 +71,14 @@ public class ProjectController {
         return map;
     }
 
-    private static void unzip(String zipFile, String dir) {
-        Expand expand = new Expand();
-        expand.setSrc(new File(zipFile));
-        expand.setDest(new File(dir));
-        Project p = new Project();
-        expand.setProject(p);
-        expand.execute();
-    }
+//    private static void unzip(String zipFile, String dir) {
+//        Expand expand = new Expand();
+//        expand.setSrc(new File(zipFile));
+//        expand.setDest(new File(dir));
+//        Project p = new Project();
+//        expand.setProject(p);
+//        expand.execute();
+//    }
 
 //    private static boolean readProject(String path, FileNode parent) {
 //        File file = new File(path);
