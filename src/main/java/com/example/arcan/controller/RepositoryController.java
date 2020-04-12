@@ -1,6 +1,8 @@
 package com.example.arcan.controller;
 
 import com.example.arcan.WebAppConfig;
+import com.example.arcan.dao.History;
+import com.example.arcan.dao.Repository;
 import com.example.arcan.service.HistoryService;
 import com.example.arcan.service.ProcessService;
 import com.example.arcan.service.RepositoryService;
@@ -50,6 +52,29 @@ public class RepositoryController {
         Map<String, Object> map = new HashMap<>();
 
         map.put("data", repositoryService.getRepositoryList(userId));
+
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/project/{repoId}", method = RequestMethod.GET)
+    public Object getRecentProject(@PathVariable("repoId") String repoId) {
+        Map<String, Object> map = new HashMap<>();
+
+        Repository repository = repositoryService.getRepositoryById(repoId);
+
+        map.put("status", repository.getStatus());
+
+        if(!repository.getStatus().equals("CREATED")) {
+            History history = historyService.getRecent(repoId);
+            map.put("data", history);
+            String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + history.getProjectId();
+            File file = new File(path);
+            if(file.isDirectory()) {
+                File[] files = file.listFiles();
+                map.put("name", files[0].getName());
+            }
+        }
 
         return map;
     }
@@ -114,7 +139,7 @@ public class RepositoryController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/analysis", method = RequestMethod.GET)
+    @RequestMapping(value = "/analysis", method = RequestMethod.POST)
     public Object analysisProject(@RequestBody Map<String, Object> projectInfo) {
         Map<String, Object> map = new HashMap<>();
 

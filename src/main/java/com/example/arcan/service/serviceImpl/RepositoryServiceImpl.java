@@ -36,6 +36,11 @@ public class RepositoryServiceImpl implements RepositoryService{
     }
 
     @Override
+    public Repository getRepositoryById(String repoId) {
+        return repositoryMapper.findRepoByRepoId(repoId);
+    }
+
+    @Override
     public boolean deleteRepository(String repoId) {
         Repository repository = repositoryMapper.findRepoByRepoId(repoId);
         if (repository != null) {
