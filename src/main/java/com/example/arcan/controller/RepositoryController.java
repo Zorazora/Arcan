@@ -149,7 +149,7 @@ public class RepositoryController {
         String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
         File pathFile = new File(path);
         File rootFile = pathFile.listFiles()[0];
-        FileNode root = processService.process(rootFile);
+        FileNode root = processService.process(rootFile, projectId);
 
         return map;
     }

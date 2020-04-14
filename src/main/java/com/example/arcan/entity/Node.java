@@ -13,8 +13,8 @@ public class Node {
     @GeneratedValue
     private Long id;
 
-    @Property(name = "repoId")
-    private String repoId;
+    @Property(name = "projectId")
+    private String projectId;
 
     @Property(name = "name")
     private String name;

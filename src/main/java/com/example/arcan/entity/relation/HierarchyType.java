@@ -16,4 +16,7 @@ public class HierarchyType {
 
     @EndNode
     private Node to;
+
+    @Property(name = "projectId")
+    private String projectId;
 }

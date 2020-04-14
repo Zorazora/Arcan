@@ -16,4 +16,7 @@ public class EfferentType {
 
     @EndNode
     private Node to;
+
+    @Property(name = "projectId")
+    private String projectId;
 }

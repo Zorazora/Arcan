@@ -5,5 +5,5 @@ import com.example.arcan.utils.FileNode;
 import java.io.File;
 
 public interface ProcessService {
-    FileNode process(File rootFile);
+    FileNode process(File rootFile, String projectId);
 }

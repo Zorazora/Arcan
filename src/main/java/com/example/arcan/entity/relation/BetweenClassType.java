@@ -16,4 +16,7 @@ public class BetweenClassType {
 
     @EndNode
     private Node to;
+
+    @Property(name = "projectId")
+    private String projectId;
 }

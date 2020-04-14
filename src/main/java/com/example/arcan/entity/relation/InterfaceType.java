@@ -16,4 +16,7 @@ public class InterfaceType {
 
     @EndNode
     private Node end;
+
+    @Property(name = "projectId")
+    private String projectId;
 }

@@ -55,7 +55,7 @@ public class ProjectController {
             //unzip(newFile.getAbsolutePath(), path);
 
             File rootFile = pathFile.listFiles()[0];
-            FileNode root = processService.process(rootFile);
+            //FileNode root = processService.process(rootFile);
 //            FileNode root = new FileNode(rootFile.getName(), FileType.PACKAGE, null);
 //            readProject(rootFile.getPath(), root);
 
