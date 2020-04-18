@@ -1,10 +1,12 @@
 package com.example.arcan.entity.relation;
 
 import com.example.arcan.entity.Node;
+import lombok.Builder;
 import lombok.Data;
 import org.neo4j.ogm.annotation.*;
 
 @Data
+@Builder
 @RelationshipEntity( type = "interface")
 public class InterfaceType {
     @Id
@@ -12,10 +14,10 @@ public class InterfaceType {
     private Long id;
 
     @StartNode
-    private Node start;
+    private Node from;
 
     @EndNode
-    private Node end;
+    private Node to;
 
     @Property(name = "projectId")
     private String projectId;
