@@ -11,12 +11,14 @@ public class FileNode {
     private String name;
     private FileType type;
     private JavaClass content;
+    private FileNode parent;
     private ArrayList<FileNode> children;
 
-    public FileNode(String name, FileType type, JavaClass content) {
+    public FileNode(String name, FileType type, JavaClass content, FileNode parent) {
         this.name = name;
         this.type = type;
         this.content = content;
+        this.parent = parent;
     }
 
     public boolean addChild(FileNode node) {
@@ -28,5 +30,10 @@ public class FileNode {
         }
         children.add(node);
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "";
     }
 }

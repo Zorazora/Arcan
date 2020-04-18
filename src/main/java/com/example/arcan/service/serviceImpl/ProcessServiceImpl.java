@@ -90,17 +90,18 @@ public class ProcessServiceImpl implements ProcessService{
                     Node parent = nodeRepository.findNodeByNameProjectId(node.getName(), projectId);
                     MembershipPackageType membership = MembershipPackageType.builder().from(child).to(parent).projectId(projectId).build();
                     membershipPackageRepository.save(membership);
-                    if(item.getType().toString().equals("CLASS")) {
+                    if(item.getType().equals(FileType.CLASS)) {
                         try {
-                            for(JavaClass javaClass: item.getContent().getInterfaces()) {
-                                String className = javaClass.getClassName();
-                                Node implementation = nodeRepository.findNodeByNameProjectId(className, projectId);
-                                InterfaceType interfaceType = InterfaceType.builder().from(child).to(implementation).projectId(projectId).build();
-                                interfaceRepository.save(interfaceType);
+                            for(String className: item.getContent().getInterfaceNames()) {
+                                if(classNames.contains(className)) {
+                                    Node implementation = nodeRepository.findNodeByNameProjectId(className, projectId);
+                                    InterfaceType interfaceType = InterfaceType.builder().from(child).to(implementation).projectId(projectId).build();
+                                    interfaceRepository.save(interfaceType);
+                                }
                             }
-                            for(JavaClass javaClass: item.getContent().getSuperClasses()) {
-                                String className = javaClass.getClassName();
-                                Node superClass = nodeRepository.findNodeByNameProjectId(className, projectId);
+                            String superClassName = item.getContent().getSuperclassName();
+                            if(classNames.contains(superClassName)) {
+                                Node superClass = nodeRepository.findNodeByNameProjectId(superClassName, projectId);
                                 HierarchyType hierarchyType = HierarchyType.builder().from(child).to(superClass).projectId(projectId).build();
                                 hierarchyRepository.save(hierarchyType);
                             }
@@ -115,7 +116,7 @@ public class ProcessServiceImpl implements ProcessService{
                                     }
                                 }
                             }
-                        } catch (ClassNotFoundException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -123,6 +124,10 @@ public class ProcessServiceImpl implements ProcessService{
                 }
             }
         }
+    }
+
+    public void createEfferentAfferent() {
+
     }
 
 //    private boolean readProject(String path, FileNode parent) {

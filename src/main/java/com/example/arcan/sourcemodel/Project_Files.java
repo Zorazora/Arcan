@@ -18,7 +18,7 @@ public class Project_Files {
 
     public Project_Files(File rootFile) {
         this.rootFile = rootFile;
-        this.root = new FileNode(rootFile.getName(), FileType.PACKAGE, null);
+        this.root = new FileNode(rootFile.getName(), FileType.PACKAGE, null, null);
         this.classNames = new ArrayList<>();
         this.packageNames = new ArrayList<>();
     }
@@ -33,7 +33,7 @@ public class Project_Files {
                     prefix += ".";
                 }
                 String packageName = prefix+list[i].getName();
-                FileNode packageNode = new FileNode(packageName, FileType.PACKAGE, null);
+                FileNode packageNode = new FileNode(packageName, FileType.PACKAGE, null, parent);
                 parent.addChild(packageNode);
                 packageNames.add(packageName);
                 readFiles(list[i].getPath(), packageNode, packageName);
@@ -42,7 +42,7 @@ public class Project_Files {
                     JavaClass javaClass = new ClassParser(list[i].getAbsolutePath()).parse();
                     String className = javaClass.getClassName();
                     classNames.add(className);
-                    FileNode classNode = new FileNode(className, FileType.CLASS, javaClass);
+                    FileNode classNode = new FileNode(className, FileType.CLASS, javaClass, parent);
 //                    ConstantPool pool = classNode.getContent().getConstantPool();
 //                    String className = classNode.getContent().getClassName();
 //                    for(Constant constant: pool.getConstantPool()) {
