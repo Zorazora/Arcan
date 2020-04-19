@@ -1,15 +1,9 @@
 package com.example.arcan.service.serviceImpl;
 
 import com.example.arcan.entity.Node;
-import com.example.arcan.entity.relation.BetweenClassType;
-import com.example.arcan.entity.relation.HierarchyType;
-import com.example.arcan.entity.relation.InterfaceType;
-import com.example.arcan.entity.relation.MembershipPackageType;
+import com.example.arcan.entity.relation.*;
 import com.example.arcan.repository.NodeRepository;
-import com.example.arcan.repository.relation.BetweenClassRepository;
-import com.example.arcan.repository.relation.HierarchyRepository;
-import com.example.arcan.repository.relation.InterfaceRepository;
-import com.example.arcan.repository.relation.MembershipPackageRepository;
+import com.example.arcan.repository.relation.*;
 import com.example.arcan.service.ProcessService;
 import com.example.arcan.sourcemodel.Project_Files;
 import com.example.arcan.utils.FileNode;
@@ -38,6 +32,12 @@ public class ProcessServiceImpl implements ProcessService{
     private HierarchyRepository hierarchyRepository;
     @Autowired
     private BetweenClassRepository betweenClassRepository;
+    @Autowired
+    private AfferentRepository afferentRepository;
+    @Autowired
+    private EfferentRepository efferentRepository;
+    @Autowired
+    private BetweenPackageRepository betweenPackageRepository;
 
     private static ArrayList<String> classNames;
 
@@ -51,6 +51,7 @@ public class ProcessServiceImpl implements ProcessService{
         children.add(root);
         initGraph(children, projectId);
         createRelationship(root, projectId);
+        createEfferentAfferent(root, projectId);
         return root;
     }
 
@@ -126,8 +127,53 @@ public class ProcessServiceImpl implements ProcessService{
         }
     }
 
-    public void createEfferentAfferent() {
-
+    public void createEfferentAfferent(FileNode node, String projectId) {
+        if(node != null) {
+            if(node.getChildren()!=null && !node.getChildren().isEmpty()) {
+                for(FileNode item: node.getChildren()) {
+                    if(item.getType().equals(FileType.CLASS)) {
+                        List<Node> nodeList = nodeRepository.findDependencyNode(item.getName(), projectId);
+                        if (nodeList != null && !nodeList.isEmpty()) {
+                            for(Node class2: nodeList) {
+                                Node class1 = nodeRepository.findNodeByNameProjectId(item.getName(), projectId);
+                                Node class2_parent = nodeRepository.findParent(class2.getName(), projectId);
+                                Node class1_parent = nodeRepository.findParent(class1.getName(), projectId);
+                                if(nodeRepository.isExistAfferent(class1.getName(),
+                                        class2_parent.getName(), projectId)==null) {
+                                    AfferentType afferentType = AfferentType.builder().from(class1).
+                                            to(class2_parent).projectId(projectId).build();
+                                    afferentRepository.save(afferentType);
+                                }
+                                if(nodeRepository.isExistEfferent(class2.getName(),
+                                        class1_parent.getName(), projectId)==null) {
+                                    EfferentType efferentType = EfferentType.builder().from(class2).
+                                            to(class1_parent).projectId(projectId).build();
+                                    efferentRepository.save(efferentType);
+                                }
+                                if(!class1_parent.getName().equals(class2_parent.getName())) {
+                                    if(nodeRepository.isExistAfferent(class1_parent.getName(),
+                                            class2.getName(), projectId)==null) {
+                                        AfferentType afferentType = AfferentType.builder().from(class1_parent).
+                                                to(class2_parent).projectId(projectId).build();
+                                        afferentRepository.save(afferentType);
+                                    }
+                                    if(nodeRepository.isExistEfferent(class2_parent.getName(),
+                                            class1_parent.getName(), projectId)==null) {
+                                        EfferentType efferentType = EfferentType.builder().from(class2_parent).
+                                                to(class1_parent).projectId(projectId).build();
+                                        efferentRepository.save(efferentType);
+                                    }
+                                    BetweenPackageType betweenPackageType = BetweenPackageType.builder().from(class1_parent).
+                                            to(class2_parent).projectId(projectId).build();
+                                    betweenPackageRepository.save(betweenPackageType);
+                                }
+                            }
+                        }
+                    }
+                    createEfferentAfferent(item, projectId);
+                }
+            }
+        }
     }
 
 //    private boolean readProject(String path, FileNode parent) {
