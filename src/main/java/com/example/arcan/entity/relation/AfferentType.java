@@ -21,4 +21,10 @@ public class AfferentType {
 
     @Property(name = "projectId")
     private String projectId;
+
+    @Property(name = "fromName")
+    private String fromName;
+
+    @Property(name = "toName")
+    private String toName;
 }

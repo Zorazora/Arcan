@@ -89,21 +89,24 @@ public class ProcessServiceImpl implements ProcessService{
                 for (FileNode item: node.getChildren()) {
                     Node child = nodeRepository.findNodeByNameProjectId(item.getName(), projectId);
                     Node parent = nodeRepository.findNodeByNameProjectId(node.getName(), projectId);
-                    MembershipPackageType membership = MembershipPackageType.builder().from(child).to(parent).projectId(projectId).build();
+                    MembershipPackageType membership = MembershipPackageType.builder().from(child).to(parent).
+                            projectId(projectId).fromName(child.getName()).toName(parent.getName()).build();
                     membershipPackageRepository.save(membership);
                     if(item.getType().equals(FileType.CLASS)) {
                         try {
                             for(String className: item.getContent().getInterfaceNames()) {
                                 if(classNames.contains(className)) {
                                     Node implementation = nodeRepository.findNodeByNameProjectId(className, projectId);
-                                    InterfaceType interfaceType = InterfaceType.builder().from(child).to(implementation).projectId(projectId).build();
+                                    InterfaceType interfaceType = InterfaceType.builder().from(child).to(implementation).
+                                            projectId(projectId).fromName(child.getName()).toName(implementation.getName()).build();
                                     interfaceRepository.save(interfaceType);
                                 }
                             }
                             String superClassName = item.getContent().getSuperclassName();
                             if(classNames.contains(superClassName)) {
                                 Node superClass = nodeRepository.findNodeByNameProjectId(superClassName, projectId);
-                                HierarchyType hierarchyType = HierarchyType.builder().from(child).to(superClass).projectId(projectId).build();
+                                HierarchyType hierarchyType = HierarchyType.builder().from(child).to(superClass).
+                                        projectId(projectId).fromName(child.getName()).toName(superClass.getName()).build();
                                 hierarchyRepository.save(hierarchyType);
                             }
                             ConstantPool pool = item.getContent().getConstantPool();
@@ -112,7 +115,8 @@ public class ProcessServiceImpl implements ProcessService{
                                     String usedName = pool.constantToString(constant);
                                     if(!usedName.equals(item.getName()) && classNames.contains(usedName)) {
                                         Node dependent = nodeRepository.findNodeByNameProjectId(usedName, projectId);
-                                        BetweenClassType betweenClassType = BetweenClassType.builder().from(child).to(dependent).projectId(projectId).build();
+                                        BetweenClassType betweenClassType = BetweenClassType.builder().from(child).to(dependent).
+                                                projectId(projectId).fromName(child.getName()).toName(dependent.getName()).build();
                                         betweenClassRepository.save(betweenClassType);
                                     }
                                 }
@@ -138,34 +142,42 @@ public class ProcessServiceImpl implements ProcessService{
                                 Node class1 = nodeRepository.findNodeByNameProjectId(item.getName(), projectId);
                                 Node class2_parent = nodeRepository.findParent(class2.getName(), projectId);
                                 Node class1_parent = nodeRepository.findParent(class1.getName(), projectId);
-                                if(nodeRepository.isExistAfferent(class1.getName(),
+                                if(afferentRepository.findByFromNameAndToNameAndProjectId(class1.getName(),
                                         class2_parent.getName(), projectId)==null) {
                                     AfferentType afferentType = AfferentType.builder().from(class1).
-                                            to(class2_parent).projectId(projectId).build();
+                                            to(class2_parent).projectId(projectId).
+                                            fromName(class1.getName()).toName(class2_parent.getName()).build();
                                     afferentRepository.save(afferentType);
                                 }
-                                if(nodeRepository.isExistEfferent(class2.getName(),
+                                if(efferentRepository.findByFromNameAndToNameAndProjectId(class2.getName(),
                                         class1_parent.getName(), projectId)==null) {
                                     EfferentType efferentType = EfferentType.builder().from(class2).
-                                            to(class1_parent).projectId(projectId).build();
+                                            to(class1_parent).projectId(projectId).
+                                            fromName(class2.getName()).toName(class1_parent.getName()).build();
                                     efferentRepository.save(efferentType);
                                 }
                                 if(!class1_parent.getName().equals(class2_parent.getName())) {
-                                    if(nodeRepository.isExistAfferent(class1_parent.getName(),
-                                            class2.getName(), projectId)==null) {
+                                    if(afferentRepository.findByFromNameAndToNameAndProjectId(class1_parent.getName(),
+                                            class2_parent.getName(), projectId)==null) {
                                         AfferentType afferentType = AfferentType.builder().from(class1_parent).
-                                                to(class2_parent).projectId(projectId).build();
+                                                to(class2_parent).projectId(projectId).
+                                                fromName(class1_parent.getName()).toName(class2_parent.getName()).build();
                                         afferentRepository.save(afferentType);
                                     }
-                                    if(nodeRepository.isExistEfferent(class2_parent.getName(),
+                                    if(efferentRepository.findByFromNameAndToNameAndProjectId(class2_parent.getName(),
                                             class1_parent.getName(), projectId)==null) {
                                         EfferentType efferentType = EfferentType.builder().from(class2_parent).
-                                                to(class1_parent).projectId(projectId).build();
+                                                to(class1_parent).projectId(projectId).
+                                                fromName(class2_parent.getName()).toName(class1_parent.getName()).build();
                                         efferentRepository.save(efferentType);
                                     }
-                                    BetweenPackageType betweenPackageType = BetweenPackageType.builder().from(class1_parent).
-                                            to(class2_parent).projectId(projectId).build();
-                                    betweenPackageRepository.save(betweenPackageType);
+                                    if(betweenPackageRepository.findByFromNameAndToNameAndProjectId(class1_parent.getName(),
+                                            class2_parent.getName(), projectId)==null){
+                                        BetweenPackageType betweenPackageType = BetweenPackageType.builder().from(class1_parent).
+                                                to(class2_parent).projectId(projectId).
+                                                fromName(class1_parent.getName()).toName(class2_parent.getName()).build();
+                                        betweenPackageRepository.save(betweenPackageType);
+                                    }
                                 }
                             }
                         }
