@@ -25,6 +25,21 @@ public interface NodeRepository extends Neo4jRepository<Node, Long> {
     int countFanIn(@Param("name")String name, @Param("projectId")String projectId);
 
     @Query("MATCH (n: Node)-[:betweenClass]->(nn: Node) WHERE n.name={name} AND " +
-            "nn.projectId={projectId} AND n.projectId={projectId} RETURN count(n)")
+            "nn.projectId={projectId} AND n.projectId={projectId} RETURN count(nn)")
     int countFanOut(@Param("name")String name, @Param("projectId") String projectId);
+
+    @Query("MATCH (n: Node)-[:hierarchy]->(nn:Node) WHERE n.name={name} AND " +
+            "n.projectId={projectId} AND nn.projectId={projectId} RETURN count(nn)")
+    int countHierarchyDependency(@Param("name")String name, @Param("projectId")String projectId);
+
+    @Query("MATCH (n: Node) WHERE n.name={name} AND n.projectId={projectId} " +
+            "SET n.FI={FI}, n.FO={FO}, n.CBO={CBO}, n.LCOM={LCOM} RETURN n")
+    Node setClassMetrics(@Param("name")String name, @Param("projectId")String projectId,
+                         @Param("FI")int FI, @Param("FO")int FO, @Param("CBO") int CBO, @Param("LCOM") double LCOM);
+
+    @Query("MATCH (n: Node) WHERE n.name={name} AND n.projectId={projectId} " +
+            "SET n.CE={CE}, n.CA={CA}, n.RMI={RMI}, n.RMA={RMA}, n.RMD={RMD} RETURN n")
+    Node setPackageMetrics(@Param("name")String name, @Param("projectId")String projectId,
+                           @Param("CA")int CA, @Param("CE")int CE,
+                           @Param("RMI")double RMI, @Param("RMA")double RMA, @Param("RMD")double RMD);
 }

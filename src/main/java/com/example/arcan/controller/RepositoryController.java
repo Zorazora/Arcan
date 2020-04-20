@@ -148,7 +148,8 @@ public class RepositoryController {
         //FileNode root = processService.process(rootFile, projectId);
         SM_Project project = new SM_Project(rootFile, projectId);
         project.readFiles();
-        project.initGraph();
+        //project.initGraph();
+        project.computeClassMetrics();
 
         return map;
     }

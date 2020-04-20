@@ -3,7 +3,11 @@ package com.example.arcan.analysis.sourcemodel;
 import com.example.arcan.service.SearchService;
 import com.example.arcan.utils.SpringUtil;
 import lombok.Data;
-import sun.plugin2.liveconnect.JavaClass;
+import org.apache.bcel.classfile.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class SM_Class {
@@ -29,21 +33,67 @@ public class SM_Class {
         computeFO();
         computeCBO();
         computeLCOM();
+        searchService.setClassMetrics(className,projectId,FI,FO,CBO,LCOM);
     }
 
-    public void computeFI() {
-        this.FI = searchService.countFanIn(className, projectId);
+    private void computeFI() {
+        FI = searchService.countFanIn(className, projectId);
+        System.out.println(className+" FI: "+FI);
     }
 
-    public void computeFO() {
-        this.FO = searchService.countFanOut(className, projectId);
+    private void computeFO() {
+        FO = searchService.countFanOut(className, projectId);
+        System.out.println(className+" FO: "+FO);
     }
 
-    public void computeCBO() {
-
+    private void computeCBO() {
+        int hierarchyDependency = searchService.countHierarchyDependency(className, projectId);
+        CBO = FO-hierarchyDependency;
+        System.out.println(className+" CBO: "+CBO);
     }
 
-    public void computeLCOM() {
-
+    private void computeLCOM() {
+        System.out.println(className);
+        ArrayList<Set<String>> sets = new ArrayList<>();
+        boolean allEmpty = true;
+        for(Method method: javaClass.getMethods()) {
+            System.out.println(method);
+            Set<String> set = new HashSet<>();
+            ConstantPool pool = method.getConstantPool();
+            for(Constant constant: pool.getConstantPool()){
+                allEmpty = false;
+                if(constant instanceof ConstantFieldref) {
+                    String variables = pool.constantToString(constant);
+                    if(variables.endsWith("I")) {
+                        variables = variables.split(" ")[0];
+                        set.add(variables);
+                    }
+                }
+            }
+            sets.add(set);
+        }
+        if (allEmpty) {
+            LCOM = 0.0;
+        }
+        int P = 0;
+        int Q = 0;
+        for(int i=0; i<sets.size()-1; i++) {
+            for(int j=i+1; j<sets.size(); j++) {
+                //计算交集
+                Set<String> set = new HashSet<>(sets.get(i));
+                set.retainAll(sets.get(j));
+                if(set.size() == 0) {
+                    P++;
+                }else {
+                    Q++;
+                }
+            }
+        }
+        if (P>Q) {
+            LCOM = P-Q;
+        }else {
+            LCOM = 0;
+        }
+        System.out.println(LCOM);
     }
 }

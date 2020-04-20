@@ -26,4 +26,24 @@ public class Node {
 
     @Property(name = "modifier")
     private String modifier;
+
+    @Property(name = "FI")
+    private int FI;
+    @Property(name = "FO")
+    private int FO;
+    @Property(name = "CBO")
+    private int CBO;
+    @Property(name = "LCOM")
+    private double LCOM;
+
+    @Property(name = "CA")
+    private int CA;
+    @Property(name = "CE")
+    private int CE;
+    @Property(name = "RMI")
+    private double RMI;
+    @Property(name = "RMA")
+    private double RMA;
+    @Property(name = "RMD")
+    private double RMD;
 }

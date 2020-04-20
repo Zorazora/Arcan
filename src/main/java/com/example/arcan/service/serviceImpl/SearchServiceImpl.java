@@ -128,4 +128,19 @@ public class SearchServiceImpl implements SearchService{
     public int countFanOut(String name, String projectId) {
         return nodeRepository.countFanOut(name, projectId);
     }
+
+    @Override
+    public int countHierarchyDependency(String name, String projectId) {
+        return nodeRepository.countHierarchyDependency(name, projectId);
+    }
+
+    @Override
+    public Node setClassMetrics(String name, String projectId, int FI, int FO, int CBO, double LCOM) {
+        return nodeRepository.setClassMetrics(name, projectId, FI, FO, CBO, LCOM);
+    }
+
+    @Override
+    public Node setPackageMetrics(String name, String projectId, int CA, int CE, double RMI, double RMA, double RMD) {
+        return nodeRepository.setPackageMetrics(name, projectId, CA, CE, RMI, RMA, RMD);
+    }
 }

@@ -43,7 +43,7 @@ public class SM_Project {
         readFilesRecursive(rootFile.getPath(), root, "");
     }
 
-    public void readFilesRecursive(String path, FileNode parent, String prefix) {
+    private void readFilesRecursive(String path, FileNode parent, String prefix) {
         File file = new File(path);
         File[] list = file.listFiles();
         for (int i = 0; i < list.length; i++) {
@@ -80,7 +80,7 @@ public class SM_Project {
         createAfferentEfferent(root);
     }
 
-    public void createNode(List<FileNode> children) {
+    private void createNode(List<FileNode> children) {
         List<FileNode> thisChildren, allChildren = new ArrayList<>();
         for (FileNode child: children) {
             String modifier = "";
@@ -106,7 +106,7 @@ public class SM_Project {
         }
     }
 
-    public void createRelationship(FileNode node) {
+    private void createRelationship(FileNode node) {
         if (node != null) {
             if (node.getChildren() != null && !node.getChildren().isEmpty()) {
                 for (FileNode item: node.getChildren()) {
@@ -154,7 +154,7 @@ public class SM_Project {
         }
     }
 
-    public void createAfferentEfferent(FileNode node) {
+    private void createAfferentEfferent(FileNode node) {
         if(node != null) {
             if(node.getChildren()!=null && !node.getChildren().isEmpty()) {
                 for(FileNode item: node.getChildren()) {
@@ -208,6 +208,14 @@ public class SM_Project {
                     createAfferentEfferent(item);
                 }
             }
+        }
+    }
+
+    public void computeClassMetrics() {
+        SM_Class clazz;
+        for(int i=0; i<this.classNames.size(); i++) {
+            clazz = new SM_Class(classNames.get(i), classes.get(i), projectId);
+            clazz.computeMetrics();
         }
     }
 
