@@ -1,11 +1,13 @@
 package com.example.arcan.controller;
 
 import com.example.arcan.WebAppConfig;
+import com.example.arcan.analysis.sourcemodel.SM_Project;
 import com.example.arcan.dao.History;
 import com.example.arcan.dao.Repository;
 import com.example.arcan.service.HistoryService;
 import com.example.arcan.service.ProcessService;
 import com.example.arcan.service.RepositoryService;
+import com.example.arcan.service.SearchService;
 import com.example.arcan.utils.FileNode;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
@@ -31,6 +33,9 @@ public class RepositoryController {
 
     @Autowired
     private ProcessService processService;
+
+    @Autowired
+    private SearchService searchService;
 
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -149,7 +154,10 @@ public class RepositoryController {
         String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
         File pathFile = new File(path);
         File rootFile = pathFile.listFiles()[0];
-        FileNode root = processService.process(rootFile, projectId);
+        //FileNode root = processService.process(rootFile, projectId);
+        SM_Project project = new SM_Project(rootFile, projectId);
+        project.readFiles();
+        project.initGraph();
 
         return map;
     }

@@ -4,6 +4,7 @@ import com.example.arcan.utils.FileNode;
 import com.example.arcan.utils.enums.FileType;
 import lombok.Data;
 import org.apache.bcel.classfile.*;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;

@@ -16,7 +16,15 @@ public interface NodeRepository extends Neo4jRepository<Node, Long> {
     @Query("MATCH (n: Node)-[:betweenClass]->(nn: Node) WHERE n.name={name}" +
             " and n.projectId={projectId} and nn.projectId={projectId} RETURN nn")
     List<Node> findDependencyNode(@Param("name") String name, @Param("projectId") String projectId);
-    
+
     @Query("MATCH (n: Node)-[:membershipPackage]->(nn: Node) WHERE n.name={name} and n.projectId={projectId} RETURN nn")
     Node findParent(@Param("name") String name, @Param("projectId") String projectId);
+
+    @Query("MATCH (n: Node)-[:betweenClass]->(nn: Node) WHERE nn.name={name} AND " +
+            "nn.projectId={projectId} AND n.projectId={projectId} RETURN count(n)")
+    int countFanIn(@Param("name")String name, @Param("projectId")String projectId);
+
+    @Query("MATCH (n: Node)-[:betweenClass]->(nn: Node) WHERE n.name={name} AND " +
+            "nn.projectId={projectId} AND n.projectId={projectId} RETURN count(n)")
+    int countFanOut(@Param("name")String name, @Param("projectId") String projectId);
 }
