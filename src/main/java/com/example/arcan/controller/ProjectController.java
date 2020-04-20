@@ -1,7 +1,6 @@
 package com.example.arcan.controller;
 
 import com.example.arcan.WebAppConfig;
-import com.example.arcan.service.ProcessService;
 import com.example.arcan.utils.FileNode;
 import com.example.arcan.utils.enums.FileType;
 import org.apache.tomcat.util.bcel.classfile.ClassParser;
@@ -23,8 +22,6 @@ import java.util.UUID;
 @CrossOrigin
 @RequestMapping("/project")
 public class ProjectController {
-    @Autowired
-    private ProcessService processService;
 
     @RequestMapping(value = "/read", method = RequestMethod.POST)
     public Object readProject(@RequestParam(value = "file") MultipartFile file) {

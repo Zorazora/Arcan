@@ -5,10 +5,7 @@ import com.example.arcan.analysis.sourcemodel.SM_Project;
 import com.example.arcan.dao.History;
 import com.example.arcan.dao.Repository;
 import com.example.arcan.service.HistoryService;
-import com.example.arcan.service.ProcessService;
 import com.example.arcan.service.RepositoryService;
-import com.example.arcan.service.SearchService;
-import com.example.arcan.utils.FileNode;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +27,6 @@ public class RepositoryController {
 
     @Autowired
     private HistoryService historyService;
-
-    @Autowired
-    private ProcessService processService;
-
-    @Autowired
-    private SearchService searchService;
 
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST)
