@@ -38,26 +38,22 @@ public class SM_Class {
 
     private void computeFI() {
         FI = searchService.countFanIn(className, projectId);
-        System.out.println(className+" FI: "+FI);
     }
 
     private void computeFO() {
         FO = searchService.countFanOut(className, projectId);
-        System.out.println(className+" FO: "+FO);
     }
 
     private void computeCBO() {
+        int betweenClassDependency = searchService.countBetweenClass(className, projectId);
         int hierarchyDependency = searchService.countHierarchyDependency(className, projectId);
-        CBO = FO-hierarchyDependency;
-        System.out.println(className+" CBO: "+CBO);
+        CBO = betweenClassDependency-hierarchyDependency;
     }
 
     private void computeLCOM() {
-        System.out.println(className);
         ArrayList<Set<String>> sets = new ArrayList<>();
         boolean allEmpty = true;
         for(Method method: javaClass.getMethods()) {
-            System.out.println(method);
             Set<String> set = new HashSet<>();
             ConstantPool pool = method.getConstantPool();
             for(Constant constant: pool.getConstantPool()){
@@ -94,6 +90,5 @@ public class SM_Class {
         }else {
             LCOM = 0;
         }
-        System.out.println(LCOM);
     }
 }

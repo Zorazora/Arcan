@@ -29,6 +29,7 @@ public interface SearchService {
 
     int countFanIn(String name, String projectId);
     int countFanOut(String name, String projectId);
+    int countBetweenClass(String name, String projectId);
     int countHierarchyDependency(String name, String projectId);
 
     Node setClassMetrics(String name, String projectId, int FI, int FO, int CBO, double LCOM);

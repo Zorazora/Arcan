@@ -130,6 +130,11 @@ public class SearchServiceImpl implements SearchService{
     }
 
     @Override
+    public int countBetweenClass(String name, String projectId) {
+        return nodeRepository.countBetweenClass(name, projectId);
+    }
+
+    @Override
     public int countHierarchyDependency(String name, String projectId) {
         return nodeRepository.countHierarchyDependency(name, projectId);
     }

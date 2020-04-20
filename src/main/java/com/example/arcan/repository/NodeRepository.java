@@ -20,13 +20,17 @@ public interface NodeRepository extends Neo4jRepository<Node, Long> {
     @Query("MATCH (n: Node)-[:membershipPackage]->(nn: Node) WHERE n.name={name} and n.projectId={projectId} RETURN nn")
     Node findParent(@Param("name") String name, @Param("projectId") String projectId);
 
-    @Query("MATCH (n: Node)-[:betweenClass]->(nn: Node) WHERE nn.name={name} AND " +
-            "nn.projectId={projectId} AND n.projectId={projectId} RETURN count(n)")
+    @Query("MATCH (n: Node)-[r]->(nn: Node) WHERE nn.name={name} AND " +
+            "nn.projectId={projectId} AND n.projectId={projectId} AND n.modifier<>\'PACKAGE\' RETURN count(n)")
     int countFanIn(@Param("name")String name, @Param("projectId")String projectId);
 
-    @Query("MATCH (n: Node)-[:betweenClass]->(nn: Node) WHERE n.name={name} AND " +
-            "nn.projectId={projectId} AND n.projectId={projectId} RETURN count(nn)")
+    @Query("MATCH (n: Node)-[r]->(nn: Node) WHERE n.name={name} AND " +
+            "nn.projectId={projectId} AND n.projectId={projectId} AND nn.modifier<>\'PACKAGE\' RETURN count(nn)")
     int countFanOut(@Param("name")String name, @Param("projectId") String projectId);
+
+    @Query("MATCH (n: Node)-[:betweenClass]->(nn:Node) WHERE n.name={name} AND" +
+            " n.projectId={projectId} AND nn.projectId={projectId} RETURN count(nn)")
+    int countBetweenClass(@Param("name")String name, @Param("projectId")String projectId);
 
     @Query("MATCH (n: Node)-[:hierarchy]->(nn:Node) WHERE n.name={name} AND " +
             "n.projectId={projectId} AND nn.projectId={projectId} RETURN count(nn)")

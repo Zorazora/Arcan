@@ -137,10 +137,13 @@ public class SM_Project {
                                 if(constant instanceof ConstantClass) {
                                     String usedName = pool.constantToString(constant);
                                     if(!usedName.equals(item.getName()) && classNames.contains(usedName)) {
-                                        Node dependent = searchService.findNodeByNameProjectId(usedName, projectId);
-                                        BetweenClassType betweenClassType = BetweenClassType.builder().from(child).to(dependent).
-                                                projectId(projectId).fromName(child.getName()).toName(dependent.getName()).build();
-                                        searchService.saveBetweenClass(betweenClassType);
+                                        if(searchService.findByFromNameAndToNameAndProjectIdBetweenClass(child.getName(),
+                                                usedName, projectId)==null) {
+                                            Node dependent = searchService.findNodeByNameProjectId(usedName, projectId);
+                                            BetweenClassType betweenClassType = BetweenClassType.builder().from(child).to(dependent).
+                                                    projectId(projectId).fromName(child.getName()).toName(dependent.getName()).build();
+                                            searchService.saveBetweenClass(betweenClassType);
+                                        }
                                     }
                                 }
                             }
