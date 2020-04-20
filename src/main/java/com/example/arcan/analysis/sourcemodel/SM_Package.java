@@ -1,8 +1,11 @@
 package com.example.arcan.analysis.sourcemodel;
 
+import com.example.arcan.entity.Node;
 import com.example.arcan.service.SearchService;
 import com.example.arcan.utils.SpringUtil;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class SM_Package {
@@ -22,18 +25,31 @@ public class SM_Package {
     }
 
     public void computeMetrics() {
-
+        computeCA();
+        computeCE();
+        computeRMI();
+        computeRMA();
+        computeRMD();
+        searchService.setPackageMetrics(packageName, projectId, CA, CE, RMI, RMA, RMD);
     }
 
-    public void computeCA() {
+    private void computeCA() {
         this.CA = searchService.countCa(packageName, projectId);
     }
 
-    public void computeCE() {
+    private void computeCE() {
         this.CE = searchService.countCe(packageName,projectId);
     }
 
-    public void computeRMs() {
+    private void computeRMI() {
+        this.RMI = (double) CE/(CA+CE);
+    }
 
+    private void computeRMA() {
+        this.RMA = searchService.calculateRMA(packageName, projectId);
+    }
+
+    private void computeRMD() {
+        this.RMD = Math.abs(this.RMA+this.RMI-1);
     }
 }

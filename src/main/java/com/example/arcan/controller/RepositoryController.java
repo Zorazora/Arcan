@@ -150,6 +150,7 @@ public class RepositoryController {
         project.readFiles();
         project.initGraph();
         project.computeClassMetrics();
+        project.computePackageMetrics();
 
         return map;
     }

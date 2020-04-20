@@ -47,9 +47,10 @@ public interface NodeRepository extends Neo4jRepository<Node, Long> {
                            @Param("CA")int CA, @Param("CE")int CE,
                            @Param("RMI")double RMI, @Param("RMA")double RMA, @Param("RMD")double RMD);
 
-    @Query("MATCH (start: Node)-[:membershipPackage*]->(end: Node) WHERE end.name={name} And end.projectId={projectId} And start.projectId={projectId} And start.modifier<>'PACKAGE' RETURN start")
+    @Query("MATCH (start: Node)-[:membershipPackage*]->(end: Node) WHERE end.name={name} And" +
+            " end.projectId={projectId} And start.projectId={projectId} And start.modifier<>\'PACKAGE\' RETURN start")
     List<Node> findInternalClasses(@Param("name") String name, @Param("projectId") String projectId);
 
-    @Query("MATCH (N: Node) WHERE n.projectId={projectId} And n.modifier<>'PACKAGE' RETURN n")
+    @Query("MATCH (n: Node) WHERE n.projectId={projectId} And n.modifier<>'PACKAGE' RETURN n")
     List<Node> findAllClassesByProjectId(@Param("projectId") String projectId);
 }

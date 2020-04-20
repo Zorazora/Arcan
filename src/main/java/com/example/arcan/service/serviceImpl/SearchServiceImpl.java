@@ -150,7 +150,7 @@ public class SearchServiceImpl implements SearchService{
         return nodeRepository.setPackageMetrics(name, projectId, CA, CE, RMI, RMA, RMD);
     }
     @Override
-    public int countCa(String name, String projectId) {
+    public int countCe(String name, String projectId) {
         List<Node> internalClasses = nodeRepository.findInternalClasses(name,projectId);
         List<Node> res = new ArrayList<>();
         for(Node internalClass : internalClasses){
@@ -165,7 +165,22 @@ public class SearchServiceImpl implements SearchService{
     }
 
     @Override
-    public int countCe(String name, String projectId) {
+    public double calculateRMA(String name, String projectId) {
+        List<Node> internalClasses = nodeRepository.findInternalClasses(name, projectId);
+        if(internalClasses.size() == 0) {
+            return 0.0;
+        }
+        int abstractNum = 0;
+        for(Node node: internalClasses) {
+            if(node.getModifier().equals("ABSTRACT")) {
+                abstractNum++;
+            }
+        }
+        return (double) abstractNum/internalClasses.size();
+    }
+
+    @Override
+    public int countCa(String name, String projectId) {
         List<Node> allClasses = nodeRepository.findAllClassesByProjectId(projectId);
         List<Node> internalClasses = nodeRepository.findInternalClasses(name,projectId);
         allClasses.removeAll(internalClasses);

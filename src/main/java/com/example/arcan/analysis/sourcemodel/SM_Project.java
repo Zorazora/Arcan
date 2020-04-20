@@ -222,4 +222,12 @@ public class SM_Project {
         }
     }
 
+    public void computePackageMetrics() {
+        SM_Package sm_package;
+        for(String packageName: packageNames) {
+            sm_package = new SM_Package(packageName, projectId);
+            sm_package.computeMetrics();
+        }
+    }
+
 }

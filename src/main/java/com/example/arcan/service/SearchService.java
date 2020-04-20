@@ -37,4 +37,5 @@ public interface SearchService {
 
     int countCa(String name, String projectId);
     int countCe(String name, String projectId);
+    double calculateRMA(String name, String projectId);
 }
