@@ -8,6 +8,7 @@ import com.example.arcan.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service("SearchService")
@@ -147,5 +148,36 @@ public class SearchServiceImpl implements SearchService{
     @Override
     public Node setPackageMetrics(String name, String projectId, int CA, int CE, double RMI, double RMA, double RMD) {
         return nodeRepository.setPackageMetrics(name, projectId, CA, CE, RMI, RMA, RMD);
+    }
+    @Override
+    public int countCa(String name, String projectId) {
+        List<Node> internalClasses = nodeRepository.findInternalClasses(name,projectId);
+        List<Node> res = new ArrayList<>();
+        for(Node internalClass : internalClasses){
+            List<Node> dependencyNodes = nodeRepository.findDependencyNode(internalClass.getName(),internalClass.getProjectId());
+            for(Node node : dependencyNodes){
+                if(!internalClasses.contains(node)&&!res.contains(node)){
+                    res.add(node);
+                }
+            }
+        }
+        return res.size();
+    }
+
+    @Override
+    public int countCe(String name, String projectId) {
+        List<Node> allClasses = nodeRepository.findAllClassesByProjectId(projectId);
+        List<Node> internalClasses = nodeRepository.findInternalClasses(name,projectId);
+        allClasses.removeAll(internalClasses);
+        List<Node> res = new ArrayList<>();
+        for(Node externalNode : allClasses){
+            List<Node> dependencyNodes = nodeRepository.findDependencyNode(externalNode.getName(),externalNode.getProjectId());
+            for(Node node : dependencyNodes){
+                if(internalClasses.contains(node)&&!res.contains(node)){
+                    res.add(node);
+                }
+            }
+        }
+        return res.size();
     }
 }

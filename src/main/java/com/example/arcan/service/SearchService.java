@@ -34,4 +34,7 @@ public interface SearchService {
 
     Node setClassMetrics(String name, String projectId, int FI, int FO, int CBO, double LCOM);
     Node setPackageMetrics(String name, String projectId, int CA, int CE, double RMI, double RMA, double RMD);
+
+    int countCa(String name, String projectId);
+    int countCe(String name, String projectId);
 }

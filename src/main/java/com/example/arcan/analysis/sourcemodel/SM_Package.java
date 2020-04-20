@@ -26,11 +26,11 @@ public class SM_Package {
     }
 
     public void computeCA() {
-
+        this.CA = searchService.countCa(packageName, projectId);
     }
 
     public void computeCE() {
-
+        this.CE = searchService.countCe(packageName,projectId);
     }
 
     public void computeRMs() {
