@@ -53,4 +53,10 @@ public interface NodeRepository extends Neo4jRepository<Node, Long> {
 
     @Query("MATCH (n: Node) WHERE n.projectId={projectId} And n.modifier<>'PACKAGE' RETURN n")
     List<Node> findAllClassesByProjectId(@Param("projectId") String projectId);
+
+    List<Node> findNodesByProjectIdAndModifier (@Param("projectId")String projectId, @Param("modifier")String modifier );
+
+    @Query("MATCH (n: Node)-[:afferent]->(nn: Node) WHERE n.name={name} AND" +
+            " n.projectId={projectId} AND nn.projectId={projectId} and nn.modifier=\'PACKAGE\' RETURN nn")
+    List<Node> getAfferentPackage(@Param("name")String name, @Param("projectId")String projectId);
 }

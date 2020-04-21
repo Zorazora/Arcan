@@ -1,6 +1,7 @@
 package com.example.arcan.controller;
 
 import com.example.arcan.WebAppConfig;
+import com.example.arcan.analysis.detection.Detector;
 import com.example.arcan.analysis.sourcemodel.SM_Project;
 import com.example.arcan.dao.History;
 import com.example.arcan.dao.Repository;
@@ -151,6 +152,9 @@ public class RepositoryController {
         project.initGraph();
         project.computeClassMetrics();
         project.computePackageMetrics();
+
+        Detector detector = new Detector(projectId);
+        map.put("data", detector.detectSmells());
 
         return map;
     }
