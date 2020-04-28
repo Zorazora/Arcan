@@ -148,10 +148,10 @@ public class RepositoryController {
         File rootFile = pathFile.listFiles()[0];
         //FileNode root = processService.process(rootFile, projectId);
         SM_Project project = new SM_Project(rootFile, projectId);
-        project.readFiles();
-        project.initGraph();
-        project.computeClassMetrics();
-        project.computePackageMetrics();
+//        project.readFiles();
+//        project.initGraph();
+//        project.computeClassMetrics();
+//        project.computePackageMetrics();
 
         Detector detector = new Detector(projectId);
         map.put("data", detector.detectSmells());

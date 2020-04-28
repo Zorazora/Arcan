@@ -21,7 +21,7 @@ public class Detector {
     public Map<String, Object> detectSmells() {
         results.put("UD", udSmellDetector.detectSmell());
         results.put("HD", hdSmellDetector.detectSmell());
-        //results.put("CD", cdSmellDetector.detectSmell());
+        results.put("CD", cdSmellDetector.detectSmell());
         return results;
     }
 }
