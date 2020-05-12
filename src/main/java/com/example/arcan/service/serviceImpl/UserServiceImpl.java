@@ -80,6 +80,21 @@ public class UserServiceImpl implements UserService{
         return null;
     }
 
+    @Override
+    public LoginEnum updateAvatar(String avatar,String userId){
+        userMapper.updateAvatar(avatar,userId);
+        return LoginEnum.SUCCESS;
+    }
+
+    @Override
+    public UserInfo getCurrentUserById(String userId) {
+        User user = userMapper.findUserById(userId);
+        if(user != null) {
+            return new UserInfo(user.getMailaddress(), user.getUsername(), user.getAvatar(), user.getId());
+        }
+        return null;
+    }
+
     private boolean sendMail(String recipient, String token) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {

@@ -1,10 +1,7 @@
 package com.example.arcan.mapper;
 
 import com.example.arcan.dao.User;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface UserMapper {
@@ -19,4 +16,7 @@ public interface UserMapper {
 
     @Update("update user set username=#{username}, password=#{password}, avatar=#{avatar}, validate=#{validate} where id=#{id}")
     void updateUser(User user);
+
+    @Update("update user set avatar=#{avatar} where id=#{userId}")
+    void updateAvatar(@Param("avatar") String avatar, @Param("userId") String userId);
 }

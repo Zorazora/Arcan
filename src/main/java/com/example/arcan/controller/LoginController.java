@@ -1,11 +1,19 @@
 package com.example.arcan.controller;
 
+import com.example.arcan.WebAppConfig;
 import com.example.arcan.dao.User;
 import com.example.arcan.service.UserService;
+import com.example.arcan.utils.UserInfo;
 import com.example.arcan.utils.enums.LoginEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -81,4 +89,67 @@ public class LoginController {
 
         return map;
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/getAvatarPath/{userId}", method = RequestMethod.GET)
+    public Object getAvatarPath(@PathVariable("userId") String userId) {
+        Map<String, Object> map = new HashMap<>();
+
+        String avatarPath = WebAppConfig.BASE;
+        String fileSeparator = System.getProperty("file.separator");
+//        avatarPath = avatarPath + fileSeparator + "avatar" + fileSeparator + userId + fileSeparator + "u=4079477275,1905110319&fm=27&gp=0.jpg";
+        UserInfo userInfo = userService.getCurrentUserById(userId);
+        avatarPath =  fileSeparator + userId + fileSeparator + userInfo.getAvatar();
+        map.put("avatarPath",avatarPath);
+        return map;
+    }
+
+    /**
+     * 图片上传
+     */
+    @RequestMapping(value = "/uploadAvatar/{userId}",method = RequestMethod.POST)
+    @ResponseBody
+    public Object uploadAvatar(@RequestParam(value = "avatar") MultipartFile avatar, @PathVariable("userId") String userId){
+        Map<String,Object> map = new HashMap<>();
+
+        System.out.println(avatar.getOriginalFilename());
+        System.out.println(userId);
+        String avatarName = avatar.getOriginalFilename();
+        LoginEnum loginEnum = userService.updateAvatar(avatarName,userId);
+        if(loginEnum == LoginEnum.SUCCESS){
+            map.put("success",true);
+            map.put("imageUrl",avatar.getOriginalFilename());
+
+            //保存文件
+            String UPLOADED_FOLDER = WebAppConfig.BASE;
+            String fileSeparator = System.getProperty("file.separator");//文件分隔符
+            try{
+                File dir = new File(UPLOADED_FOLDER);
+
+                if (!dir.exists() || !dir.isDirectory()) {
+                    dir.mkdir();
+                }
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "avatar");
+                if (!dir.exists() || !dir.isDirectory()) {
+                    dir.mkdir();
+                }
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "avatar"
+                        + fileSeparator + userId);
+                if (!dir.exists() || !dir.isDirectory()) {
+                    dir.mkdir();
+                }
+                //得到文件存储
+                byte[] bytes = avatar.getBytes();
+                Path path = Paths.get(UPLOADED_FOLDER + fileSeparator + "avatar" + fileSeparator + userId + fileSeparator + avatar.getOriginalFilename());
+                Files.write(path, bytes);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }else{
+            map.put("success",false);
+        }
+        map.put("success",true);
+        return map;
+    }
+
 }
