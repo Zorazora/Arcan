@@ -146,12 +146,16 @@ public class RepositoryController {
         String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
         File pathFile = new File(path);
         File rootFile = pathFile.listFiles()[0];
-        //FileNode root = processService.process(rootFile, projectId);
+        System.out.println(rootFile.getName());
+        System.out.println(pathFile.listFiles()[1]);
+        if(rootFile.getName().equals("__MACOSX")) {
+            rootFile = pathFile.listFiles()[1];
+        }
         SM_Project project = new SM_Project(rootFile, projectId);
-//        project.readFiles();
-//        project.initGraph();
-//        project.computeClassMetrics();
-//        project.computePackageMetrics();
+        project.readFiles();
+        project.initGraph();
+        project.computeClassMetrics();
+        project.computePackageMetrics();
 
         Detector detector = new Detector(projectId);
         map.put("data", detector.detectSmells());

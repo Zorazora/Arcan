@@ -2,11 +2,8 @@ package com.example.arcan.analysis.detection;
 
 import com.example.arcan.entity.Node;
 import com.example.arcan.utils.graph.Graph;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CDSmellDetector extends ArchitecturalSmellDetector{
 
@@ -21,18 +18,23 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
         Map<String, Object> map = new HashMap<>();
         map.put("package", formatOutput(packageLevelDetect(), "PACKAGE"));
         map.put("class", formatOutput(classLevelDetect(), "CLASS"));
+//        map.put("package", packageLevelDetect().size());
+//        map.put("class", classLevelDetect().size());
         return map;
     }
 
     private Object formatOutput(List cycles, String type) {
         int[][] tableOne;
         int[][] tableTwo;
+        List<String> nodeNames;
         if(type.equals("PACKAGE")) {
             tableOne = new int[cycles.size()][packageNodes.size()];
             tableTwo = new int[packageNodes.size()][packageNodes.size()];
+            nodeNames = packageNodes.stream().map(Node::getName).collect(Collectors.toList());
         }else {
             tableOne = new int[cycles.size()][classNodes.size()];
             tableTwo = new int[classNodes.size()][classNodes.size()];
+            nodeNames = classNodes.stream().map(Node::getName).collect(Collectors.toList());
         }
         Map<Integer, Set> map = new HashMap<>();
         for(int i=0; i<cycles.size(); i++) {
@@ -73,6 +75,7 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
         Map<String, Object> result = new HashMap<>();
         result.put("tableOne", tableOne);
         result.put("tableTwo", tableTwo);
+        result.put("nodeNames", nodeNames);
         return result;
     }
 
