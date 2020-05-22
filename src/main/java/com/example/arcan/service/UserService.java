@@ -10,4 +10,6 @@ public interface UserService {
     LoginEnum signIn(String mailaddress, String password);
     boolean resend(String mailaddress);
     UserInfo getCurrentUser(String mailaddress);
+    LoginEnum updateAvatar(String avatar,String userId);
+    UserInfo getCurrentUserById(String userId);
 }
