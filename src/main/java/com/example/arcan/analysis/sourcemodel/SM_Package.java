@@ -47,6 +47,6 @@ public class SM_Package {
     }
 
     private void computeRMD() {
-        this.RMD = Math.abs(this.RMA+this.RMI-1);
+        this.RMD = Math.abs((this.RMA+this.RMI-1)/2);
     }
 }
