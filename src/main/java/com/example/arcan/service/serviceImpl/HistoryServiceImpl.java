@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service("HistoryService")
@@ -30,5 +31,11 @@ public class HistoryServiceImpl implements HistoryService{
     @Override
     public History getRecent(String repoId) {
         return historyMapper.getHistoryList(repoId).get(0);
+    }
+
+    @Override
+    public List<History> getHistoryListByRepoId(String repoId){
+        List<History> histories = historyMapper.getHistoryList(repoId);
+        return histories;
     }
 }

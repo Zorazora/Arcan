@@ -9,6 +9,7 @@ import com.example.arcan.service.HistoryService;
 import com.example.arcan.service.RepositoryService;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
+import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
@@ -21,9 +22,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @CrossOrigin
@@ -34,6 +33,9 @@ public class RepositoryController {
 
     @Autowired
     private HistoryService historyService;
+
+    private String LOGIN = "zlk-bobule";
+    private String PASSWORD = "Lcm199858";
 
     @ResponseBody
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -79,6 +81,31 @@ public class RepositoryController {
             }
         }
 
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/HistoryProjectRes/{repoId}", method = RequestMethod.GET)
+    public Object getHistoryProjectRes(@PathVariable("repoId") String repoId) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<History> histories = historyService.getHistoryListByRepoId(repoId);
+        List<String> projectNames = new ArrayList<>();
+        List<Map<String, Object>> results = new ArrayList<>();
+        for(History history : histories){
+            String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + history.getProjectId();
+            File file = new File(path);
+            if(file.isDirectory()) {
+                File[] files = file.listFiles();
+                projectNames.add(files[0].getName());
+            }
+            Detector detector = new Detector(history.getProjectId());
+            results.add(detector.detectSmells());
+        }
+
+        map.put("histories", histories);
+        map.put("projectNames", projectNames);
+        map.put("results", results);
         return map;
     }
 
@@ -154,14 +181,13 @@ public class RepositoryController {
         File rootFile = pathFile.listFiles()[0];
         //FileNode root = processService.process(rootFile, projectId);
         SM_Project project = new SM_Project(rootFile, projectId);
-//        project.readFiles();
-//        project.initGraph();
-//        project.computeClassMetrics();
-//        project.computePackageMetrics();
+        project.readFiles();
+        project.initGraph();
+        project.computeClassMetrics();
+        project.computePackageMetrics();
 
         Detector detector = new Detector(projectId);
         map.put("data", detector.detectSmells());
-
         return map;
     }
 
@@ -175,11 +201,22 @@ public class RepositoryController {
 
         try {
             String fullName = "";
-            GitHub gitHub = GitHub.connectUsingPassword("zlk-bobule", "Lcm199858");
+            GitHub gitHub = GitHub.connectUsingPassword(LOGIN, PASSWORD);
             if(githubAddress.length()>23){
                 if(githubAddress.substring(0,19).equals("https://github.com/")&&githubAddress.substring(githubAddress.length()-4,githubAddress.length()).equals(".git")){
                     fullName = githubAddress.substring(19,githubAddress.length()-4);
                     GHRepository ghRepository = gitHub.getRepository(fullName);
+                    List<GHRelease> releases = ghRepository.getReleases();
+                    List<String> releaseNames = new ArrayList<>();
+                    for(GHRelease ghRelease:releases){
+                        releaseNames.add(ghRelease.getTagName());
+                        System.out.println(ghRelease.getTagName());
+                    }
+                    if(releases.size()!=0){
+                        map.put("releases",releaseNames);
+                    }else{
+                        map.put("releases",null);
+                    }
                     if(ghRepository==null){
                         res = false;
                     }
@@ -198,6 +235,69 @@ public class RepositoryController {
         map.put("success", res);
         return map;
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/analysisRelease", method = RequestMethod.POST)
+    public Object analysisRelease(@RequestBody Map<String, Object> projectInfo) {
+        Map<String, Object> map = new HashMap<>();
+
+        String githubAddress = (String) projectInfo.get("githubAddress");
+        String repoId = (String) projectInfo.get("repoId");
+        String release = (String) projectInfo.get("release");
+        String projectId = UUID.randomUUID().toString().replace("-", "");
+        System.out.println("repoId: "+repoId);
+        System.out.println("projectId: "+projectId);
+
+        String urlStr = githubAddress.substring(0,githubAddress.length()-4) + "/releases/download/" + release + "/" + release + ".jar";
+
+        URL url = null;
+        try {
+            url = new URL(urlStr);
+            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+
+// Check for errors
+            int responseCode = con.getResponseCode();
+            InputStream inputStream;
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                inputStream = con.getInputStream();
+            } else {
+                inputStream = con.getErrorStream();
+            }
+
+            String path1 = WebAppConfig.BASE + "/zip/" + projectId + "/" + release + ".jar";
+            OutputStream output1 = new FileOutputStream(path1);
+            String path2 = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId +"/"+ release + ".jar";
+            OutputStream output2 = new FileOutputStream(path1);
+
+// Process the response
+            BufferedReader reader;
+            String line = null;
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = reader.readLine()) != null) {
+                output1.write(line.getBytes());
+                output2.write(line.getBytes());
+            }
+
+            System.out.println("okk");
+            output1.close();
+            output2.close();
+            inputStream.close();
+        } catch (Exception e) {
+//            e.printStackTrace();
+        }
+
+        String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
+        File pathFile = new File(path);
+        File rootFile = pathFile.listFiles()[0];
+        SM_Project project = new SM_Project(rootFile, projectId);
+
+        Detector detector = new Detector(projectId);
+        map.put("data", detector.detectSmells());
+
+        return map;
+
+    }
+
 
     @ResponseBody
     @RequestMapping(value = "/analysisGithubProject", method = RequestMethod.POST)
