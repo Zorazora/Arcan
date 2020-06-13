@@ -36,6 +36,16 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
             tableTwo = new int[classNodes.size()][classNodes.size()];
             nodeNames = classNodes.stream().map(Node::getName).collect(Collectors.toList());
         }
+        List<String> newNodeNames = new ArrayList<>();
+
+        for(String nodeName : nodeNames){
+            if(nodeName.contains(".")){
+                String[] strs = nodeName.split("\\.");
+                newNodeNames.add(strs[strs.length-1]);
+            }else{
+                newNodeNames.add(nodeName);
+            }
+        }
         Map<Integer, Set> map = new HashMap<>();
         for(int i=0; i<cycles.size(); i++) {
             List cycle = (List) cycles.get(i);
@@ -75,7 +85,68 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
         Map<String, Object> result = new HashMap<>();
         result.put("tableOne", tableOne);
         result.put("tableTwo", tableTwo);
-        result.put("nodeNames", nodeNames);
+        result.put("nodeNames", newNodeNames);
+        List<Map> list1 = new ArrayList<>();
+        Map<String,Object> map1 = new HashMap();
+        map1.put("title","Node Names");
+        map1.put("width", 100);
+        map1.put("dataIndex", "name");
+        map1.put("key", "name");
+        map1.put("fixed", "left");
+        list1.add(map1);
+        int i=0;
+        for(String nodeName:newNodeNames){
+            Map<String,Object> map2 = new HashMap();
+            map2.put("title",nodeName);
+            map2.put("dataIndex", i);
+            map2.put("key", i);
+            map2.put("width", 100);
+            i++;
+            list1.add(map2);
+        }
+        result.put("colums1",list1);
+        List<Map> list2 = new ArrayList<>();
+        for(int j=0;j<tableOne.length;j++){
+            Map<String,Object> map3 = new HashMap();
+            map3.put("key",j);
+            map3.put("name","cycle"+j);
+            for(int z=0;z<nodeNames.size();z++){
+                map3.put(String.valueOf(z),tableOne[j][z]);
+            }
+            list2.add(map3);
+        }
+        result.put("data1",list2);
+
+        List<Map> list3 = new ArrayList<>();
+        Map<String,Object> map4 = new HashMap();
+        map4.put("title","Node Names");
+        map4.put("width", 100);
+        map4.put("dataIndex", "name");
+        map4.put("key", "name");
+        map4.put("fixed", "left");
+        list3.add(map4);
+        int o=0;
+        for(String nodeName:newNodeNames){
+            Map<String,Object> map5 = new HashMap();
+            map5.put("title",nodeName);
+            map5.put("dataIndex", o);
+            map5.put("key", o);
+            map5.put("width", 100);
+            o++;
+            list3.add(map5);
+        }
+        result.put("colums2",list3);
+        List<Map> list4 = new ArrayList<>();
+        for(int j=0;j<tableTwo.length;j++){
+            Map<String,Object> map5 = new HashMap();
+            map5.put("key",j);
+            map5.put("name",newNodeNames.get(j));
+            for(int z=0;z<nodeNames.size();z++){
+                map5.put(String.valueOf(z),tableTwo[j][z]);
+            }
+            list4.add(map5);
+        }
+        result.put("data2",list4);
         return result;
     }
 

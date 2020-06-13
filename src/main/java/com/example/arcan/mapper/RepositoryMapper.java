@@ -1,10 +1,7 @@
 package com.example.arcan.mapper;
 
 import com.example.arcan.dao.Repository;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -23,4 +20,7 @@ public interface RepositoryMapper {
     @Update("update repository set repoName=#{repoName}, description=#{description}, status=#{status}" +
             "where userId=#{userId} and repoId=#{repoId}")
     void updateRepository(Repository repository);
+
+    @Select("select * from repository where (repoName like '%${keyword}%' or description like '%${keyword}%') and userId = #{userId}")
+    List<Repository> findRepoByKeyWord(@Param("userId") String userId, @Param("keyword") String keyword);
 }

@@ -25,6 +25,7 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
+    //用户注册
     @ResponseBody
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public Object register(@RequestBody Map<String, Object> registerInfo) {
@@ -40,6 +41,7 @@ public class LoginController {
         return map;
     }
 
+    //验证是否激活
     @ResponseBody
     @RequestMapping(value = "/validate/{token}", method = RequestMethod.GET)
     public Object validateLink(@PathVariable("token") String token) {

@@ -11,4 +11,5 @@ public interface RepositoryService {
     boolean deleteRepository(String repoId);
     void modifyStatus(String repoId, String status);
     void modifyDescription(String repoId, String description);
+    List<Repository> findFitKeyWord(String userId, String keyword);
 }

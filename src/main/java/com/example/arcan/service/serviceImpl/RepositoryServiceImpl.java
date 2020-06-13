@@ -64,4 +64,9 @@ public class RepositoryServiceImpl implements RepositoryService{
         repository.setDescription(description);
         repositoryMapper.updateRepository(repository);
     }
+
+    @Override
+    public List<Repository> findFitKeyWord(String userId, String keyword) {
+        return repositoryMapper.findRepoByKeyWord(userId,keyword);
+    }
 }

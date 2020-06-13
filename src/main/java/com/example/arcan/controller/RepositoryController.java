@@ -3,6 +3,7 @@ package com.example.arcan.controller;
 import com.example.arcan.WebAppConfig;
 import com.example.arcan.analysis.detection.Detector;
 import com.example.arcan.analysis.sourcemodel.SM_Project;
+import com.example.arcan.analysis.sourcemodel.SM_Project_2;
 import com.example.arcan.dao.History;
 import com.example.arcan.dao.Repository;
 import com.example.arcan.service.HistoryService;
@@ -58,6 +59,21 @@ public class RepositoryController {
 
         map.put("data", repositoryService.getRepositoryList(userId));
 
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/findList", method = RequestMethod.POST)
+    public Object findFitKeyWord(@RequestBody Map<String, Object> projectInfo) {
+        String userId = (String) projectInfo.get("userId");
+        String keyword = (String) projectInfo.get("keyword");
+
+        Map<String, Object> map = new HashMap<>();
+
+        System.out.println(keyword);
+        List<Repository> repositories = repositoryService.findFitKeyWord(userId,keyword);
+        System.out.println("个数: " + repositories.size());
+        map.put("data", repositories);
         return map;
     }
 
@@ -179,8 +195,6 @@ public class RepositoryController {
         String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
         File pathFile = new File(path);
         File rootFile = pathFile.listFiles()[0];
-        System.out.println(rootFile.getName());
-        System.out.println(pathFile.listFiles()[1]);
         if(rootFile.getName().equals("__MACOSX")) {
             rootFile = pathFile.listFiles()[1];
         }
@@ -242,7 +256,7 @@ public class RepositoryController {
 
     @ResponseBody
     @RequestMapping(value = "/analysisRelease", method = RequestMethod.POST)
-    public Object analysisRelease(@RequestBody Map<String, Object> projectInfo) {
+    public Object analysisRelease(@RequestBody Map<String, Object> projectInfo) throws IOException{
         Map<String, Object> map = new HashMap<>();
 
         String githubAddress = (String) projectInfo.get("githubAddress");
@@ -253,47 +267,55 @@ public class RepositoryController {
         System.out.println("projectId: "+projectId);
 
         String urlStr = githubAddress.substring(0,githubAddress.length()-4) + "/releases/download/" + release + "/" + release + ".jar";
+        System.out.println("url: "+urlStr);
 
-        URL url = null;
+        URL url = new URL(urlStr);
+        InputStream is = null;
+        OutputStream os = null;
         try {
-            url = new URL(urlStr);
-            HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-
-// Check for errors
-            int responseCode = con.getResponseCode();
-            InputStream inputStream;
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                inputStream = con.getInputStream();
-            } else {
-                inputStream = con.getErrorStream();
+            String path = WebAppConfig.BASE + "/zip/" + projectId + "/";
+            File pathFile = new File(path);
+            if(!pathFile.getParentFile().exists()) {
+                pathFile.getParentFile().mkdirs();
             }
 
-            String path1 = WebAppConfig.BASE + "/zip/" + projectId + "/" + release + ".jar";
-            OutputStream output1 = new FileOutputStream(path1);
-            String path2 = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId +"/"+ release + ".jar";
-            OutputStream output2 = new FileOutputStream(path1);
-
-// Process the response
-            BufferedReader reader;
-            String line = null;
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-            while ((line = reader.readLine()) != null) {
-                output1.write(line.getBytes());
-                output2.write(line.getBytes());
+            if(!pathFile.exists()) {
+                pathFile.mkdirs();
             }
 
-            System.out.println("okk");
-            output1.close();
-            output2.close();
-            inputStream.close();
-        } catch (Exception e) {
-//            e.printStackTrace();
+            os = new FileOutputStream(new File(WebAppConfig.BASE + "/zip/" + projectId + "/"+release+".jar"));
+            is = url.openStream();
+            // Read bytes...
+            int a = 0;
+            while((a = is.read()) != -1){
+                os.write(a);
+            }
+            System.out.print("ppp1");
+
+        } catch (IOException exp) {
+            exp.printStackTrace();
+            System.out.print("ppp2");
+        } finally {
+            System.out.print("ppp3");
+            try {
+                is.close();
+            } catch (Exception exp) {
+            }
+            try {
+                os.close();
+            } catch (Exception exp) {
+            }
         }
 
-        String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
-        File pathFile = new File(path);
-        File rootFile = pathFile.listFiles()[0];
-        SM_Project project = new SM_Project(rootFile, projectId);
+
+        String path = WebAppConfig.BASE + "/zip/" + projectId + "/"+release+".jar/";
+//        String path ="/Users/zhuyuxin/Desktop/未命名文件夹/jtravis-2.1.jar";
+        SM_Project_2 project = new SM_Project_2(path, projectId);
+        project.readFiles();
+        project.createNode();
+        project.initGraph();
+        project.computeMetrics();
+
 
         Detector detector = new Detector(projectId);
         map.put("data", detector.detectSmells());
@@ -315,6 +337,8 @@ public class RepositoryController {
         String repoStr = startStr.substring(0,startStr.length()-4);
         String urlStr = "https://api.github.com/repos/"+repoStr+"/zipball/master";
 
+        System.out.println(urlStr);
+
         URL url = null;
         try {
             url = new URL("https://api.github.com/repos/zlk-bobule/detection/zipball/master");
@@ -329,7 +353,7 @@ public class RepositoryController {
                 inputStream = con.getErrorStream();
             }
 
-            OutputStream output = new FileOutputStream("/Users/zhuyuxin/Desktop/test.zip");
+            OutputStream output = new FileOutputStream("/Users/zhuyuxin/Desktop/未命名文件");
 
 // Process the response
             BufferedReader reader;
@@ -356,11 +380,13 @@ public class RepositoryController {
 //        project.computePackageMetrics();
 
         Detector detector = new Detector("e0232c823de74cc5b17430aa8fca6312");
-        map.put("data", detector.detectSmells());
+//        map.put("data", detector.detectSmells());
 
         return map;
 
     }
+
+
 
 
 
