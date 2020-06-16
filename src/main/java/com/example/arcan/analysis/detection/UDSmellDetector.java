@@ -7,14 +7,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 public class UDSmellDetector extends ArchitecturalSmellDetector{
     private double threshold;
 
-    public UDSmellDetector(String projectId) {
+    public UDSmellDetector(String projectId, double threshold) {
         super(projectId);
-        this.threshold = (double) 1/3;
+        //this.threshold = (double) 1/3;
+        this.threshold = threshold;
     }
 
     @Override
@@ -37,7 +39,8 @@ public class UDSmellDetector extends ArchitecturalSmellDetector{
             }
         }
 
-        return results;
+        List<Dependency> result = results.stream().filter(d->d.filtered==false).collect(Collectors.toList());
+        return result;
     }
 
     @Data

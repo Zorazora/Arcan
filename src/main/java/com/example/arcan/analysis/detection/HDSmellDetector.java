@@ -1,6 +1,7 @@
 package com.example.arcan.analysis.detection;
 
 import com.example.arcan.entity.Node;
+import com.example.arcan.utils.enums.NodeModifier;
 import lombok.Data;
 
 import java.util.*;
@@ -31,18 +32,27 @@ public class HDSmellDetector extends ArchitecturalSmellDetector{
         double inMedian = calMedian(ingoing);
         double outMedian = calMedian(outgoing);
 
-        ArrayList<String> hubClasses = new ArrayList<>();
+        ArrayList<Node> hubClasses = new ArrayList<>();
         ArrayList<String> test = new ArrayList<>();
+        ArrayList<String> modified = new ArrayList<>();
         for(Node node: results) {
             test.add(node.getName());
             if(node.getFI()>inMedian && node.getFO()>outMedian) {
-                hubClasses.add(node.getName());
+                hubClasses.add(node);
+                modified.add(node.getName());
+            }
+        }
+        ArrayList<String> result = new ArrayList<>();
+        for(Node node: hubClasses) {
+            if(node.getModifier().equals(NodeModifier.ABSTRACT.toString())){
+                result.add(node.getName());
             }
         }
         System.out.println(hubClasses.size());
         Map<String, Object> map = new HashMap<>();
-        map.put("original", test);
-        map.put("modified", hubClasses);
+//        map.put("original", test);
+//        map.put("modified", modified);
+        map.put("modified", result);
         return map;
     }
 
@@ -56,5 +66,10 @@ public class HDSmellDetector extends ArchitecturalSmellDetector{
             median = (double) (array.get(size/2 - 1)+array.get(size/2))/2;
         }
         return median;
+//        int sum = 0;
+//        for(int i=0; i<array.size(); i++) {
+//            sum += array.get(i);
+//        }
+//        return (double) sum/array.size();
     }
 }

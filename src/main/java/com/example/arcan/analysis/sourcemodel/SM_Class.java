@@ -12,6 +12,7 @@ import java.util.Set;
 @Data
 public class SM_Class {
     private String className;
+    private String parent;
     private JavaClass javaClass;
     private String projectId;
     private int FI;
@@ -21,10 +22,11 @@ public class SM_Class {
 
     private SearchService searchService;
 
-    public SM_Class(String className, JavaClass javaClass, String projectId) {
+    public SM_Class(String className, JavaClass javaClass, String projectId, String parent) {
         this.className = className;
         this.javaClass = javaClass;
         this.projectId = projectId;
+        this.parent = parent;
         this.searchService = SpringUtil.getBean(SearchService.class);
     }
 

@@ -24,6 +24,7 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
     }
 
     private Object formatOutput(List cycles, String type) {
+        System.out.println(type+" "+cycles.size());
         int[][] tableOne;
         int[][] tableTwo;
         List<String> nodeNames;
@@ -65,6 +66,7 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
             }
 
         }
+
         for(int i=0; i<tableOne[0].length; i++) {
             for(int j=0; j<tableOne[0].length; j++) {
                 if(map.get(i)==null || map.get(j)== null) {
@@ -85,6 +87,7 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
         Map<String, Object> result = new HashMap<>();
         result.put("tableOne", tableOne);
         result.put("tableTwo", tableTwo);
+
         result.put("nodeNames", newNodeNames);
         List<Map> list1 = new ArrayList<>();
         Map<String,Object> map1 = new HashMap();
@@ -147,6 +150,19 @@ public class CDSmellDetector extends ArchitecturalSmellDetector{
             list4.add(map5);
         }
         result.put("data2",list4);
+
+        result.put("nodeNames", nodeNames);
+
+//        int nonDup = 0;
+//        for(int a=0; a<tableOne[0].length; a++) {
+//            for (int b=a; b<tableOne[0].length; b++) {
+//                if(tableTwo[a][b]!=0) {
+//                    nonDup++;
+//                }
+//            }
+//        }
+//        result.put("nonDup", nonDup);
+
         return result;
     }
 

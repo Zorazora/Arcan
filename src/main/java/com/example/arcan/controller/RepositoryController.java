@@ -3,17 +3,16 @@ package com.example.arcan.controller;
 import com.example.arcan.WebAppConfig;
 import com.example.arcan.analysis.detection.Detector;
 import com.example.arcan.analysis.sourcemodel.SM_Project;
-import com.example.arcan.analysis.sourcemodel.SM_Project_2;
 import com.example.arcan.dao.History;
 import com.example.arcan.dao.Repository;
 import com.example.arcan.service.HistoryService;
+import com.example.arcan.service.ProjectService;
 import com.example.arcan.service.RepositoryService;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
@@ -34,6 +32,9 @@ public class RepositoryController {
 
     @Autowired
     private HistoryService historyService;
+
+    @Autowired
+    private ProjectService projectService;
 
     private String LOGIN = "zlk-bobule";
     private String PASSWORD = "Lcm199858";
@@ -143,31 +144,32 @@ public class RepositoryController {
 
         String projectId = UUID.randomUUID().toString().replace("-", "");
 
-        String path = WebAppConfig.BASE + "/zip/" + projectId + "/";
+        //String path = WebAppConfig.BASE + "/zip/" + projectId + "/";
+        String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId +"/";
         String filename = file.getOriginalFilename();
+        System.out.println(filename);
         File newFile = new File(path, filename);
 
         if(!newFile.getParentFile().exists()) {
             newFile.getParentFile().mkdirs();
         }
-
         try {
             if(newFile.createNewFile()) {
                 file.transferTo(new File(newFile.getAbsolutePath()));
             }
 
-            path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId +"/";
-            File pathFile = new File(path);
-
-            if(!pathFile.getParentFile().exists()) {
-                pathFile.getParentFile().mkdirs();
-            }
-
-            if(!pathFile.exists()) {
-                pathFile.mkdirs();
-            }
-
-            unzip(newFile.getAbsolutePath(), path);
+//            path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId +"/";
+//            File pathFile = new File(path);
+//
+//            if(!pathFile.getParentFile().exists()) {
+//                pathFile.getParentFile().mkdirs();
+//            }
+//
+//            if(!pathFile.exists()) {
+//                pathFile.mkdirs();
+//            }
+//
+//            unzip(newFile.getAbsolutePath(), path);
 
             historyService.createHistory(repoId, projectId);
             repositoryService.modifyStatus(repoId, "UPLOADED");
@@ -192,17 +194,46 @@ public class RepositoryController {
         String repoId = (String) projectInfo.get("repoId");
         String projectId = (String) projectInfo.get("projectId");
 
-        String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
-        File pathFile = new File(path);
-        File rootFile = pathFile.listFiles()[0];
-        if(rootFile.getName().equals("__MACOSX")) {
-            rootFile = pathFile.listFiles()[1];
-        }
-        SM_Project project = new SM_Project(rootFile, projectId);
-        project.readFiles();
-        project.initGraph();
-        project.computeClassMetrics();
-        project.computePackageMetrics();
+
+//        String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
+//        File pathFile = new File(path);
+//        File rootFile = pathFile.listFiles()[0];
+//        if(rootFile.getName().equals("__MACOSX")) {
+//            rootFile = pathFile.listFiles()[1];
+//        }
+//        SM_Project_1 project = new SM_Project_1(rootFile, projectId);
+
+//        String path = WebAppConfig.BASE + "/repositories/" + repoId + "/" + projectId + "/";
+//        File pathFile = new File(path);
+//        File rootFile = pathFile.listFiles()[0];
+//        if(rootFile.getName().equals("__MACOSX")) {
+//            rootFile = pathFile.listFiles()[1];
+//        }
+//        SM_Project_1 project = new SM_Project_1(rootFile, projectId);
+//        project.readFiles();
+//        project.initGraph();
+//        project.computeClassMetrics();
+//        project.computePackageMetrics();
+//
+//        Detector detector = new Detector(projectId);
+//        map.put("data", detector.detectSmells());
+
+//        String jarPath = "/Users/zorazora/Desktop/毕业课题/data/maven-core-3.0.5.jar/";
+//        SM_Project_2 project = new SM_Project_2(jarPath, projectId);
+//
+//        project.readFiles();
+//        project.createNode();
+//        project.initGraph();
+//        project.computeMetrics();
+//
+//        System.out.println(project.getPackageNames().size()+" "+project.getClassNames().size());
+//        map.put("NOP", project.getPackageNames().size());
+//        map.put("NOC", project.getClassNames().size());
+
+        SM_Project project = projectService.readFiles(repoId, projectId);
+
+        projectService.initGraph(project);
+        projectService.computeMetrics(project);
 
         Detector detector = new Detector(projectId);
         map.put("data", detector.detectSmells());
@@ -310,11 +341,11 @@ public class RepositoryController {
 
         String path = WebAppConfig.BASE + "/zip/" + projectId + "/"+release+".jar/";
 //        String path ="/Users/zhuyuxin/Desktop/未命名文件夹/jtravis-2.1.jar";
-        SM_Project_2 project = new SM_Project_2(path, projectId);
-        project.readFiles();
-        project.createNode();
-        project.initGraph();
-        project.computeMetrics();
+//        SM_Project_2 project = new SM_Project_2(path, projectId);
+//        project.readFiles();
+//        project.createNode();
+//        project.initGraph();
+//        project.computeMetrics();
 
 
         Detector detector = new Detector(projectId);
@@ -373,7 +404,7 @@ public class RepositoryController {
         File pathFile = new File(path);
         File rootFile = pathFile.listFiles()[0];
         //FileNode root = processService.process(rootFile, projectId);
-        SM_Project project = new SM_Project(rootFile, "e0232c823de74cc5b17430aa8fca6312");
+        //SM_Project_1 project = new SM_Project_1(rootFile, "e0232c823de74cc5b17430aa8fca6312");
 //        project.readFiles();
 //        project.initGraph();
 //        project.computeClassMetrics();
@@ -385,11 +416,6 @@ public class RepositoryController {
         return map;
 
     }
-
-
-
-
-
 
     private static void unzip(String zipFile, String dir) {
         Expand expand = new Expand();

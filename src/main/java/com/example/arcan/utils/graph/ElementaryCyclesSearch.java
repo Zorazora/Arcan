@@ -2,6 +2,7 @@ package com.example.arcan.utils.graph;
 
 import com.example.arcan.entity.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -23,6 +24,8 @@ public class ElementaryCyclesSearch {
 
     /** Stack for nodes, used by the algorithm of Johnson */
     private Vector stack = null;
+
+    private List simplified = null;
 
     /**
      * Constructor.
@@ -70,7 +73,30 @@ public class ElementaryCyclesSearch {
             }
         }
 
-        return this.cycles;
+        List filtered = new ArrayList();
+        for(int i = 0; i < cycles.size(); i++){
+            if(((ArrayList)(cycles.get(i))).size()>2){
+                filtered.add(cycles.get(i));
+            }
+        }
+
+        simplified = new ArrayList();
+        simplified.addAll(cycles);
+        for(int i=0; i<filtered.size();i++) {
+            for(int j=0; j<filtered.size();j++) {
+                if(i!=j){
+                    if(((ArrayList)filtered.get(j)).containsAll((ArrayList)filtered.get(i))) {
+                        if(simplified.contains(filtered.get(i)) && simplified.contains(filtered.get(j))){
+                            simplified.remove(filtered.get(i));
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return simplified;
     }
 
     /**
@@ -92,7 +118,7 @@ public class ElementaryCyclesSearch {
             int w = ((Integer) adjList[v].get(i)).intValue();
             // found cycle
             if (w == s) {
-                Vector cycle = new Vector();
+                ArrayList<Node> cycle = new ArrayList<>();
                 for (int j = 0; j < this.stack.size(); j++) {
                     int index = ((Integer) this.stack.get(j)).intValue();
                     cycle.add(this.graphNodes.get(index));
