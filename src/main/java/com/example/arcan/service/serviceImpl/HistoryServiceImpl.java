@@ -17,7 +17,7 @@ public class HistoryServiceImpl implements HistoryService{
     private HistoryMapper historyMapper;
 
     @Override
-    public void createHistory(String repoId, String projectId) {
+    public String createHistory(String repoId, String projectId) {
         Date currentTime = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String createTime = dateFormat.format(currentTime);
@@ -26,6 +26,7 @@ public class HistoryServiceImpl implements HistoryService{
 
         History history = new History(repoId, projectId, createTime, resultId);
         historyMapper.createOneHistory(history);
+        return resultId;
     }
 
     @Override

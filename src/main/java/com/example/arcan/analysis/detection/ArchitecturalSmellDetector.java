@@ -14,5 +14,9 @@ public abstract class ArchitecturalSmellDetector {
         this.nodeRepository = SpringUtil.getBean(NodeRepository.class);
     }
 
+    public ArchitecturalSmellDetector(){
+
+    }
+
     abstract public Object detectSmell();
 }

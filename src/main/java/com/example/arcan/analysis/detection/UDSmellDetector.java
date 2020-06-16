@@ -3,6 +3,7 @@ package com.example.arcan.analysis.detection;
 import com.example.arcan.entity.Node;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
-public class UDSmellDetector extends ArchitecturalSmellDetector{
+public class UDSmellDetector extends ArchitecturalSmellDetector implements Serializable {
     private double threshold;
 
     public UDSmellDetector(String projectId, double threshold) {
@@ -44,7 +45,7 @@ public class UDSmellDetector extends ArchitecturalSmellDetector{
     }
 
     @Data
-    class Dependency{
+    class Dependency implements Serializable{
         private String packageName;
         private double instability;
         private Map<String, Double> causeSmellPackages;
