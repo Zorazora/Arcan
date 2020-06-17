@@ -149,7 +149,7 @@ public class LoginController {
                 if (!dir.exists() || !dir.isDirectory()) {
                     dir.mkdir();
                 }
-                dir = new File(UPLOADED_FOLDER + fileSeparator + "react-app2"+fileSeparator+"src"+fileSeparator+"images"+fileSeparator + userId);
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "react-app"+fileSeparator+"src"+fileSeparator+"images"+fileSeparator + userId);
                 if (!dir.exists() || !dir.isDirectory()) {
                     dir.mkdir();
                 }
