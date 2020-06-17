@@ -114,16 +114,22 @@ public class LoginController {
     public Object uploadAvatar(@RequestParam(value = "avatar") MultipartFile avatar, @PathVariable("userId") String userId){
         Map<String,Object> map = new HashMap<>();
 
-        System.out.println(avatar.getOriginalFilename());
-        System.out.println(userId);
+//        System.out.println(avatar.getOriginalFilename());
+//        System.out.println(userId);
         String avatarName = avatar.getOriginalFilename();
         LoginEnum loginEnum = userService.updateAvatar(avatarName,userId);
+//        System.out.println(WebAppConfig.class.getClassLoader().getResource("").getFile());
+        String realPath = WebAppConfig.class.getClassLoader().getResource("")
+                .getFile();
+        java.io.File file = new java.io.File(realPath);
+        realPath = file.getParentFile().getParentFile().getParentFile().getAbsolutePath(); //获取jar包的上级目录
+        System.out.println(realPath);
         if(loginEnum == LoginEnum.SUCCESS){
             map.put("success",true);
             map.put("imageUrl",avatar.getOriginalFilename());
 
             //保存文件
-            String UPLOADED_FOLDER = WebAppConfig.BASE;
+            String UPLOADED_FOLDER = realPath;
             String fileSeparator = System.getProperty("file.separator");//文件分隔符
             try{
                 File dir = new File(UPLOADED_FOLDER);
@@ -131,18 +137,26 @@ public class LoginController {
                 if (!dir.exists() || !dir.isDirectory()) {
                     dir.mkdir();
                 }
-                dir = new File(UPLOADED_FOLDER + fileSeparator + "avatar");
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "react-app");
                 if (!dir.exists() || !dir.isDirectory()) {
                     dir.mkdir();
                 }
-                dir = new File(UPLOADED_FOLDER + fileSeparator + "avatar"
-                        + fileSeparator + userId);
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "react-app"+fileSeparator+"src");
+                if (!dir.exists() || !dir.isDirectory()) {
+                    dir.mkdir();
+                }
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "react-app"+fileSeparator+"src"+fileSeparator+"images");
+                if (!dir.exists() || !dir.isDirectory()) {
+                    dir.mkdir();
+                }
+                dir = new File(UPLOADED_FOLDER + fileSeparator + "react-app2"+fileSeparator+"src"+fileSeparator+"images"+fileSeparator + userId);
                 if (!dir.exists() || !dir.isDirectory()) {
                     dir.mkdir();
                 }
                 //得到文件存储
                 byte[] bytes = avatar.getBytes();
-                Path path = Paths.get(UPLOADED_FOLDER + fileSeparator + "avatar" + fileSeparator + userId + fileSeparator + avatar.getOriginalFilename());
+                Path path = Paths.get(UPLOADED_FOLDER + fileSeparator + "react-app"+fileSeparator+"src" + fileSeparator + "images"
+                        + fileSeparator + userId + fileSeparator + avatar.getOriginalFilename());
                 Files.write(path, bytes);
             }catch (IOException e){
                 e.printStackTrace();
@@ -151,6 +165,15 @@ public class LoginController {
             map.put("success",false);
         }
         map.put("success",true);
+        return map;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getUserByUserId/{userId}", method = RequestMethod.GET)
+    public Object getUserByUserId(@PathVariable("userId") String userId) {
+        Map<String, Object> map = new HashMap<>();
+        UserInfo userInfo = userService.getCurrentUserById(userId);
+        map.put("user",userInfo);
         return map;
     }
 
